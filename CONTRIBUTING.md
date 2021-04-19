@@ -61,6 +61,10 @@ and easy to merge requests.
 Your Pull Request will be reviewed by one of our devs/volunteers and you will be
 asked to reformat it if needed.
 
+Please continue to use MATLAB 2019a when working on the `.mlapp` files for consistency reasons.
+For modifications of `.m` files, any MATLAB version can be used.
+Only use a version later than 2019a if really required.
+
 ## Issues
 
 Open an issue if you want to report a bug or suggest a feature.
