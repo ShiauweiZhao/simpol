@@ -22,9 +22,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Installation and first startup:
 
-1. Download the `simpol` folder of this project and copy it to your favorite location, e.g. `C:/Program Files/SimPo`.
-
-1. Copy the Web Service Java Client from your Polarion Server`<Polarion Server Host>/polarion/sdk/lib/com.polarion.alm.ws.client/` into the folder `3rdparty\wsclient`
+1. Download the `simpol` folder of this project and copy it to your favorite location, e.g. `C:/Program Files/SimPol`.
 
 1. In MATLAB, open the root folder of SimPol and type `install_simpol`.
 
@@ -34,7 +32,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 1. Call `SimPol`.
 
-Alternatively, you can use `deploy_simpol` to create a p-code version of SimPol which can then be distributed locally for installation. You will still have to copy/paste the Web Service Java Client from your Polarion server.
+Alternatively, you can use `deploy_simpol` to create a p-code version of SimPol which can then be distributed locally for installation.
 
 Refer to [SimPol User Guide](SimPol%20User%20Guide.docx) for more details.
 
