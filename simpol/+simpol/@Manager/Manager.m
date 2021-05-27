@@ -44,7 +44,7 @@ classdef Manager < handle & simpol.utils.UserNotificationInterface
         
         function h = Manager()
             
-            if getpref('SimPol', 'Debug')
+            if ispref('SimPol', 'Debug')
                 assignin('base', 'debugStream', simpol.utils.DebugStream(h));
             end
             
