@@ -1,4 +1,3 @@
-
 % if exist(folderName, 'file') 
 %     rmdir(folderName, 's');
 % end
@@ -21,13 +20,13 @@ mkdir(folderPath);
 copyfile('simpol', folderPath);
 
 
-fid = fopen(fullfile(folderPath, '+simpol', 'Manager.m'), 'r');
+fid = fopen(fullfile(folderPath, '+simpol', '@manager', 'Manager.m'), 'r');
 s = fread(fid, '*char')';
 s = strrep(s, '##VERSION##', version);
 s = strrep(s, '##BUILD##', datestr(now));
 fclose(fid);
 
-fid = fopen(fullfile(folderPath, '+simpol', 'Manager.m'), 'w');
+fid = fopen(fullfile(folderPath, '+simpol', '@manager', 'Manager.m'), 'w');
 fwrite(fid, s);
 fclose(fid);
 
