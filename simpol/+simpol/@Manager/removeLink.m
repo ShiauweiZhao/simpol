@@ -24,7 +24,7 @@ function [bSuccess, bBiSuccess] = removeLink(h, side, linkId)
         bSuccess = adapter.removeLink(link1);
     else
         bSuccess = h.linkModel.removeLinkToSimulink(...
-            h.matlabAdapter, h.matlabAdapter, link1);
+            h.polarionAdapter, h.matlabAdapter, link1);
     end
 
     % Remove counter link (link2)
