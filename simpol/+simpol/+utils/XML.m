@@ -20,6 +20,26 @@ classdef XML
             import javax.xml.parsers.DocumentBuilderFactory;       
             
             if bFragment
+                if contains(s,'&')
+                    s = strrep(s,'&','&amp;');
+                end
+                
+                if contains(s,'<')
+                    s = strrep(s,'<','&lt;');
+                end
+                
+                if contains(s,'>')
+                    s = strrep(s,'>','&gt;');
+                end
+				
+		if contains(s,'''')
+                    s = strrep(s,'''','&apos;');
+                end
+                
+                if contains(s,'"')
+                    s = strrep(s,'"','&quot;');
+                end
+
                 s = ['<root-fragment>' s '</root-fragment>'];
             end
             
