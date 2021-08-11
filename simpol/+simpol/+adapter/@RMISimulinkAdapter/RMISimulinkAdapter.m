@@ -149,13 +149,11 @@ classdef RMISimulinkAdapter < simpol.adapter.AbstractBasicRMIAdapter
             
             url = convertCharsToStrings(url);
             
-            id = [];
             
             [idx1, idx2] = regexp(url, "\[(.*?)\]");
             
             if isempty(idx1) || isempty(idx2)
-                id = url;
-                return;
+                error("Invalid Simulink element URL.");
             end
             
             id = extractBetween(url, idx1+1, idx2-1);
