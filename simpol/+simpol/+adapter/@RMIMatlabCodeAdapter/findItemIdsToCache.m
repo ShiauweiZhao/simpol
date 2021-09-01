@@ -14,14 +14,24 @@ for i = 1:numel(h.mgr.settings.Targets)
         break;
     end
     
-    [~, targetFileName, targetFileExt] = fileparts(targetFilePath);
+    if isempty(regexp(targetFilePath, '+.+.m', 'match'))
+                [~, targetFileName, targetFileExt] = fileparts(targetFilePath);
+    else
+                ss = regexp(targetFilePath, '+(.+).m$', 'tokens');
+                targetFileName = char(strrep(ss{1},'\','.'));
+                [~,~,targetFileExt] = fileparts(targetFilePath);
+   end
+          
     
     if ~isempty(targetFilePath)
         
         if strcmp(targetFileExt, '.m')
             
             targetIds = {[targetFileName targetFileExt]};
-            
+            if ~isempty(regexp(targetFilePath, '+.+.m', 'match'))
+                targetIds{1} = strrep(targetIds{1},'.m','');
+            end
+                
         else %.slx
             try
                 load_system(targetFileName);

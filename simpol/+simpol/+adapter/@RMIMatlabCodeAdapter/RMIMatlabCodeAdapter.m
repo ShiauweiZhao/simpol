@@ -140,7 +140,11 @@ classdef RMIMatlabCodeAdapter < simpol.adapter.AbstractBasicRMIAdapter
         
         
         function  target = validateTarget(targetFilePath)
-            [~,target, ext] = fileparts(targetFilePath);
+            if isempty(regexp(targetFilePath, '+.+.m', 'match'))
+                [~,target, ext] = fileparts(targetFilePath);
+            else
+                target = strrep(regexp(targetFilePath, '+(.+).m$', 'tokens'),'\','.');
+            end
             
             if ~any(strcmp(ext, simpol.adapter.RMIMatlabCodeAdapter.getTargetFileFilter()))
                 target = {};

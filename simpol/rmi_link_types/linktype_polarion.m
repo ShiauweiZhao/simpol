@@ -267,8 +267,18 @@ function reqstruct = SelectionLinkFcn(targets, bMake2Way)
         
         % Treat MATLAB code linking
         if ischar(targets{1})
-            splits = strsplit(targets{1}, '|');
-            [~, name, ext] = fileparts(splits{1});
+            %%%%% Addittion of code to handle class types
+            if isempty(regexp(targets{1}, '+.+.m', 'match'))
+                splits = strsplit(targets{1}, '|');
+                [~, name, ext] = fileparts(splits{1});
+            else
+                splits = strsplit(targets{1}, '|');
+                ss = regexp(targets{1}, '+(.+).m', 'tokens');
+                name = char(strrep(ss{1},'\','.'));
+                [~,~,ext] = fileparts(splits{1});
+            end
+            %%%%%
+            
             
             if strcmp(ext, '.m') 
                 % There are two possibilities:
@@ -280,7 +290,11 @@ function reqstruct = SelectionLinkFcn(targets, bMake2Way)
                 [~, rangeId] = rmiml.ensureBookmark(splits{1}, splits{2});
                 
                 mgr.matlabAdapter.updateCache();
-                targets{1} = [name ext '|' rangeId];
+                if isempty(regexp(targets{1}, '+.+.m', 'match'))
+                    targets{1} = [name ext '|' rangeId];
+                else
+                    targets{1} = [name '|' rangeId];
+                end
             end
         end
         rt = sfroot;
