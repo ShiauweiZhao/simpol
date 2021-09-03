@@ -1,4 +1,4 @@
-function addLink(h, workItemId, destItemId)
+function addLink(h, workItemId, itemId_m)
 
     h.ensureIsWritable();
     h.polarionAdapter.ensureOpenSession;
@@ -7,17 +7,15 @@ function addLink(h, workItemId, destItemId)
     % cache and try again
     % ---------------------------
 
-    URL = h.matlabAdapter.getNavURL(char(destItemId));
+%     URL = h.matlabAdapter.getNavURL(char(itemId_m));
     
-    itemId_m = convertCharsToStrings(...
-        h.matlabAdapter.resolveLink(URL));
 
     if itemId_m == ""
 
         h.matlabAdapter.updateCache();
 
-        itemId_m = convertCharsToStrings(...
-            h.matlabAdapter.resolveLink(URL));
+%         itemId_m = convertCharsToStrings(...
+%             h.matlabAdapter.resolveLink(URL));
 
         if itemId_m == ""
 
