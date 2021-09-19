@@ -701,24 +701,13 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         % -----------------------------------------------------------------
         
-        function nl = getImageTags(h, xdoc)
-            import javax.xml.xpath.*
-            xPathFactory = XPathFactory.newInstance();
-            xpath = xPathFactory.newXPath();
-            nl = xpath.compile(...
-                '//img').evaluate(...
-                xdoc, XPathConstants.NODESET);
-        end
-        
-        % -----------------------------------------------------------------
-        
         function [idxTag, xitem, nTags] = findImageTag(h, doc, imgRef)
             % Check if tag already exists
             
             idxTag = 0;
             xitem = [];
             
-            nl = h.getImageTags(doc);
+            nl = doc.getElementsByTagName('img');
             nTags = nl.getLength();
             for i = 1:nTags
                 try
@@ -1063,7 +1052,7 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                 s = char(jWorkItem.getDescription().getContent());
                 doc = simpol.utils.XML.str2dom(s, 'fragment', true); % Parse fragment
             
-                nl = h.getImageTags(doc);
+                nl = doc.getElementsByTagName('img');
                 for i = 1:nl.getLength()
                     doc.getFirstChild().removeChild(nl.item(i-1));
                 end
