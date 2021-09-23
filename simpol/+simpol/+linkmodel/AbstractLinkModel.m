@@ -15,8 +15,10 @@ classdef AbstractLinkModel
         % from  a Polarion work item to a Simulink item.
         % workItemId - ID of the Polarion work item.
         % Data - Required fields are "mItemId" and "url".
-        % Returns true if the link could be added, false otherwise.
-        b = addLinkToSimulink(h, polarionAdapter, rmiAdapter, workItemId, data);
+        % Returns true if the link could be added, false otherwise. The second return
+        % argument returns the id of the directly linked work item, which is the
+        % workItemId for a direct link, and the surrogate id for an indirect link.
+        [b, linkItemId] = addLinkToSimulink(h, polarionAdapter, rmiAdapter, workItemId, data);
         
         % removeLinkToSimulink Removes a link depending on the link model.
         % link Link of type simpol.data.Link

@@ -29,7 +29,7 @@ classdef DirectLinkModel < simpol.linkmodel.AbstractLinkModel
 
         % -----------------------------------------------------------------
         
-        function b = addLinkToSimulink(polarionAdapter, rmiAdapter, workItemId, data)
+        function [b, workItemId] = addLinkToSimulink(polarionAdapter, rmiAdapter, workItemId, data)
             % addLinkToSimulink Mainly adding a hyperlink to the polarion
             % work item and adding a link.
             b = false;

@@ -42,18 +42,30 @@ function addLink(h, workItemId, itemId_m)
 
     % Create link on polarion side
     % ---------------------------
+    [bAddedLink, linkItemId] = h.linkModel.addLinkToSimulink(...
+        h.polarionAdapter, h.matlabAdapter, workItemId, data);
 
-    if h.linkModel.addLinkToSimulink(...
-            h.polarionAdapter, h.matlabAdapter, workItemId, data)
-
+    if bAddedLink
         polItem = h.polarionAdapter.getCachedItem(workItemId);
+        
+        % access surrogate work item id, if present
+        surrogateId = '';
+        if not(strcmp(linkItemId, workItemId))
+            surrogateId = linkItemId;
+        end
+
+        % append surrogate work item id, if present
+        surrogateSuffix = "";
+        if not(isempty(surrogateId))
+            surrogateSuffix = " via " + string(surrogateId);
+        end
 
         % RMI stuff is old, so better use chars
         data = struct(...
             "doc", string(h.polarionAdapter.sServerURL) + "/",...
-            "id",  "@" +  h.polarionAdapter.getHttpUrl(workItemId, true),...
-            "description", string(workItemId),... % RMI Struct Description
-            "revision", string(polItem.lastUpdated));                    
+            "id",  "@" +  h.polarionAdapter.getHttpUrl(workItemId, true, surrogateId),...
+            "description", string(workItemId) + surrogateSuffix,... % RMI Struct Description
+            "revision", string(polItem.lastUpdated));
 
         % Create link on rmi side
         if ~h.matlabAdapter.addLink(itemId_m, workItemId, data)

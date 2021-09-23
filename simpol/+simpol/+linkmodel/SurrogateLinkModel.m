@@ -52,7 +52,7 @@ classdef SurrogateLinkModel < simpol.linkmodel.AbstractLinkModel
         
         % -----------------------------------------------------------------
         
-        function b = addLinkToSimulink(polarionAdapter, rmiAdapter, workItemId, data)
+        function [b, surrogateWorkItemId] = addLinkToSimulink(polarionAdapter, rmiAdapter, workItemId, data)
             
             b = false;
             
@@ -83,7 +83,8 @@ classdef SurrogateLinkModel < simpol.linkmodel.AbstractLinkModel
             % -------------------------------------------------------------
             
             jSurrogateWorkItem = polarionAdapter.getWorkItem(...
-                surrogateWorkItemUri, {'description', 'attachments', 'hyperlinks'});
+                surrogateWorkItemUri, {'id', 'description', 'attachments', 'hyperlinks'});
+            surrogateWorkItemId = char(jSurrogateWorkItem.getId());
             
             bSuccessHyp = polarionAdapter.addHyperlink(jSurrogateWorkItem, data.url);
             
