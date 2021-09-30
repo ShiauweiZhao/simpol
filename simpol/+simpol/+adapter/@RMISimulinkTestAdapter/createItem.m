@@ -4,6 +4,8 @@ function item = createItem(h, itemId)
 
 item = simpol.data.Item();
 item.id = itemId;
+% fullID paramter is a workaround for MATLAB adapter, here is just id copy
+item.fullID = itemId;  
 
 tm = sltest.testmanager.load(strtok(itemId, '|'));
 
