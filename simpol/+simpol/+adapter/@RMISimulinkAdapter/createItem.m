@@ -4,6 +4,8 @@ function item = createItem(~, itemId)
 
 item = simpol.data.Item();
 item.id = itemId;
+% fullID paramter is a workaround for MATLAB adapter, here is just id copy
+item.fullID = itemId;  
 
 try
     load_system(Simulink.ID.getModel(itemId));
