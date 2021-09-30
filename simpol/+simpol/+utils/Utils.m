@@ -61,6 +61,52 @@ classdef Utils < handle
             pos = [xLeftDialog, yTopDialog, widthDialog, heightDialog];
             
         end
+        % -----------------------------------------------------------------
+        
+        function ref = getMatlabRefFromPath( filePath )
+            % getMatlabRefFromPath derives the MATLAB function/class
+            % reference from the input .m file path            
+            
+            isPkg = regexp( filePath, '(?:^|[/\\])\+(.+)\.m$', 'tokens' );
+            isClass = regexp( filePath, '(?:^|[/\\])@(.+)[/\\](.+)\.m$', 'tokens' );
+            if isempty( isPkg ) && isempty( isClass )
+                [~,ref, ext] = fileparts(filePath);
+                if ~any(strcmp(ext, simpol.adapter.RMIMatlabCodeAdapter.getTargetFileFilter()))
+                    ref = {};
+                end
+            elseif ~isempty( isPkg ) && isempty( isClass )
+                if length(isPkg) > 1 % Unexpected path string
+                    ref = {};
+                else
+                    ref = regexprep( isPkg{1},'[/\\]\+', '.');
+                    ref = string( regexprep( ref,'[/\\]', '.') );
+                end
+            elseif isempty( isPkg ) && ~isempty( isClass )
+                ref = locExtractClassRef( isClass );
+            else
+                pkgToken = regexp( filePath, '(?:^|[/\\])\+(.+)[/\\]@', 'tokens' );
+                pkgSubStr = regexprep( pkgToken{1},'[/\\]\+', '.');
+                classSubStr = locExtractClassRef( isClass );
+                ref = strcat( pkgSubStr, ".", classSubStr );
+            end
+        end
+        
+    end
+end
+
+function ref = locExtractClassRef( classTokens )
+    if length(classTokens) > 1 % Unexpected path string
+        ref = {};
+    else
+        if length(classTokens{1}) ~= 2 % Unexpected path string
+            ref = {};
+        elseif strcmp( classTokens{1}(1), classTokens{1}(2) )
+            % Class constructor
+            ref = classTokens{1}(1); 
+        else
+            % Class external function
+            ref = strcat( classTokens{1}(1), "." , classTokens{1}(2) );
+        end
     end
 end
 

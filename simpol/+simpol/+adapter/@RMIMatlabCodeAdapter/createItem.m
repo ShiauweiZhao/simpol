@@ -11,6 +11,14 @@ idx = find(strcmp(data(:,1), splits{2}), 1, 'first');
 bookmarkRange=[data{idx,2:3}];
 rowRange= bookmarkToRow(which(splits{1}), bookmarkRange);
 
+% rmi('get', id) has a limitation: id needs a full path 
+% for packages and classes to resolve
+if contains( splits{1}, '.')
+    item.fullID = strcat( which( splits{1} ), "|", splits{2} );
+else
+    item.fullID = item.id;
+end
+    
 try
     text = rmiml.getText(splits{1}, splits{2});
 catch

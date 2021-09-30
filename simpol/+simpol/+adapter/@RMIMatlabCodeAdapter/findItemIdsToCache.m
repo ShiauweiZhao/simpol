@@ -14,24 +14,15 @@ for i = 1:numel(h.mgr.settings.Targets)
         break;
     end
     
-    if isempty(regexp(targetFilePath, '+.+.m', 'match'))
-                [~, targetFileName, targetFileExt] = fileparts(targetFilePath);
-    else
-                ss = regexp(targetFilePath, '+(.+).m$', 'tokens');
-                targetFileName = char(strrep(ss{1},'\','.'));
-                [~,~,targetFileExt] = fileparts(targetFilePath);
-   end
-          
+    [~, targetFileName, targetFileExt] = fileparts(targetFilePath);
     
     if ~isempty(targetFilePath)
         
         if strcmp(targetFileExt, '.m')
             
-            targetIds = {[targetFileName targetFileExt]};
-            if ~isempty(regexp(targetFilePath, '+.+.m', 'match'))
-                targetIds{1} = strrep(targetIds{1},'.m','');
-            end
-                
+            targetId = { h.mgr.settings.Targets{i} };
+            targetIdExt = targetId;
+            
         else %.slx
             try
                 load_system(targetFileName);
@@ -39,18 +30,19 @@ for i = 1:numel(h.mgr.settings.Targets)
                 mdl = rt.find('-isa', 'Simulink.BlockDiagram', '-and',...
                     'Name', targetFileName);
                 mblocks = mdl.find('-isa', 'Stateflow.EMChart');
-                targetIds = arrayfun(@(x)Simulink.ID.getSID(x), mblocks,...
+                targetIdExt = arrayfun(@(x)Simulink.ID.getSID(x), mblocks,...
                     'UniformOutput', false);
+                targetId = targetIdExt;
             catch
                 warning("Cannot find " +  targetFileName + ".");
             end
             
         end
         
-        for j = 1:numel(targetIds)
-            data = slreq.utils.getRangesAndLabels(which(targetIds{j}));
+        for j = 1:numel(targetIdExt)
+            data = slreq.utils.getRangesAndLabels(which(targetId{j}));
             for k = 1:size(data,1)
-                itemIds = [itemIds; cellstr([targetIds{j} '|' data{k,1}])];
+                itemIds = [itemIds; cellstr([targetIdExt{j} '|' data{k,1}])]; %#ok<AGROW>
             end
         end
     end
