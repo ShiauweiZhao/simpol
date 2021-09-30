@@ -161,7 +161,7 @@ classdef AbstractBasicRMIAdapter < simpol.adapter.AbstractAdapter
             
             item = h.createItem(itemId);
 
-            rmiLinks = rmi('get', itemId);
+            rmiLinks = rmi('get', item.fullID);
             links = simpol.data.Link.empty(0, numel(rmiLinks));
             for i = 1:numel(rmiLinks)
                 links(i) = h.createLinkFromRMIStruct(item, rmiLinks(i), i);

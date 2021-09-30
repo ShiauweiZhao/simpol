@@ -7,6 +7,7 @@ classdef Item < handle
         name string = "";
         description string = "";
         lastUpdated string = "";
+        fullID string = "";
         parentWorkItemIds string;
         optional;   
         suspected = false; % Suspected state of the item, not the link 
