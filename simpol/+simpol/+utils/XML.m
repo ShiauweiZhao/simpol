@@ -11,7 +11,7 @@ classdef XML
             
             p = inputParser;
             p.CaseSensitive = false;
-            p.addParameter('fragment', false, @logical);
+            p.addParameter('fragment', false, @islogical);
             p.parse(varargin{:});
             bFragment = p.Results.fragment;            
             
@@ -35,8 +35,8 @@ classdef XML
             
             p = inputParser;
             p.CaseSensitive = false;
-            p.addParameter('omitDeclaration', false, @logical);
-            p.addParameter('fragment', false, @logical);
+            p.addParameter('omitDeclaration', false, @islogical);
+            p.addParameter('fragment', false, @islogical);
             p.parse(varargin{:});
             bOmitDeclaration = p.Results.omitDeclaration;
             bFragment = p.Results.fragment;
