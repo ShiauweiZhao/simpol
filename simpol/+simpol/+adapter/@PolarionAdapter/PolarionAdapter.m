@@ -49,13 +49,13 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         % -----------------------------------------------------------------
         
-        function s = getHttpUrl(h, uri_id, bRelative)
+        function s = getHttpUrl(h, uri_id, bRelative, via_id)
             
             uri_id = convertStringsToChars(uri_id);
             
             s = '';
             
-            if nargin == 2
+            if nargin < 3
                 bRelative = false;
             end
             
@@ -68,6 +68,12 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                 s = uri_id(2:end);
             else
                 s = ['/project/' h.sProjectID '/workitem?id=' uri_id];
+            end
+            
+            % Append surrogate id if available
+            if nargin > 3 && ~isempty(via_id) && ~contains(s, 'via=')
+                % TODO
+                s = [s '&via=' via_id];
             end
             
             % Add baseline
@@ -923,13 +929,15 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         % -----------------------------------------------------------------
         
-        function ids = uri2id(h, ids)
-            ids = extractAfter(ids, '?id=');
+        function ids = uri2id(~, ids)
+            ids = regexp(ids, '(?<=[?&]id=).*?(?=&|$)', 'match');
+            assert(all(cellfun(@isscalar, ids)));
+            ids = [ids{:}];
         end
         
         % -----------------------------------------------------------------
         
-        function b = isUri(h, ids)
+        function b = isUri(~, ids)
             b = startsWith(string(ids), 'subterra:data-service:objects:');
         end
         
