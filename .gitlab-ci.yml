@@ -1,0 +1,204 @@
+####################
+#     Headers      #
+####################
+include:
+  - template: Workflows/MergeRequest-Pipelines.gitlab-ci.yml
+
+####################
+# Global Variables #
+####################
+variables:
+  GIT_STRATEGY: fetch
+  MATLAB_VERSION: 2019b
+  MATLAB: matlab -batch
+  MATLAB_WIN: "C:/Program Files/MATLAB/R$MATLAB_VERSION/bin/matlab.exe"
+  NEED_X11: "false"
+
+# Defind supported versions here
+.supported_versions: &supported_versions
+  parallel:
+    matrix:
+      - MATLAB_VERSION: [2019b, 2021b]
+
+.install_simpol_linux: &install_simpol_linux
+  - |
+    sudo chown $(id -u):$(id -g) /usr/local/MATLAB/defaultMatlab/toolbox/local/pathdef.m
+    $MATLAB "disp(version); run simpol/install_simpol"
+    
+.install_simpol_windows: &install_simpol_windows
+  - '& $env:MATLAB_WIN -batch "disp(version); run simpol/install_simpol"'
+ 
+# a docker job that runs Matlab on Linux
+.matlab:linux:
+  tags: ["docker", "linux"]
+  image: gitlab.lrz.de:5005/tulrfsd/common/docker-matlab/matlab:R${MATLAB_VERSION}_CI
+  before_script:
+    - *install_simpol_linux
+    - if [ "$NEED_X11" = "true" ]; then
+         sudo apt update && sudo apt install -y xvfb;
+         export MATLAB="xvfb-run matlab -batch";
+      fi
+
+# a docker job that runs Matlab on Windows
+.matlab:windows:
+  tags: ["windows"]
+  before_script:
+    - *install_simpol_windows
+
+# rules
+.basic_rules: &basic_rules
+  - if: '$CI_PIPELINE_SOURCE == "schedule"'
+  - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" 
+  - when: manual
+    allow_failure: true
+
+# a Matlab task in the 'test' stage in Linux
+.test:linux:
+  extends: .matlab:linux
+  stage: test
+  <<: *supported_versions
+  rules:
+    - *basic_rules
+
+# a Matlab task in the 'test' stage in Windows
+.test:windows:
+  extends: .matlab:windows
+  stage: test
+  <<: *supported_versions
+  rules:
+    - *basic_rules
+
+# jobs
+.test_class:linux:
+  extends: .test:linux
+  variables:
+    TEST_CLASS: CLASS_TO_TEST
+  script: 
+    - $MATLAB "
+      addpath('tests/');
+      result = runtests('${TEST_CLASS}');
+      disp(table(result));
+      exit(any(~[result.Passed]))"
+
+.test_class:windows:
+  extends: .test:windows
+  variables:
+    TEST_CLASS: CLASS_TO_TEST
+  script: 
+    - '& $env:MATLAB_WIN -batch "
+      addpath(''tests/'');
+      result = runtests(''$env:TEST_CLASS'');
+      disp(table(result));
+      exit(any(~[result.Passed]))"'
+
+.test_dir:linux:
+  extends: .test:linux
+  variables:
+    TEST_DIR: DIR_TO_TEST
+  script: 
+    - $MATLAB "
+      result = runtests('$TEST_DIR','IncludeSubfolders',false);
+      disp(table(result));
+      exit(any(~[result.Passed]))"
+
+.test_dir:windows:
+  extends: .test:windows
+  variables:
+    TEST_DIR: DIR_TO_TEST
+  script: 
+    - '& $env:MATLAB_WIN -batch "
+      result = runtests(''$env:TEST_DIR'');
+      disp(table(result));
+      exit(any(~[result.Passed]))"'
+
+####################
+#       Jobs       #
+####################
+
+# ----------------------------------------------------------------------
+# Basic tests
+#   These tests are basic and should pass for all commits on master
+# ----------------------------------------------------------------------
+test:basic:linux:
+  extends: .test_dir:linux
+  variables:
+    TEST_DIR: tests
+
+test:basic:windows:
+  extends: .test_dir:windows
+  variables:
+    TEST_DIR: tests
+
+# ---------------------------------------------------------------------
+# Test class - test single class
+#   description to test class
+# ----------------------------------------------------------------------
+#testName:linux:
+#  extends: .test_class:linux
+#  variables:
+#    TEST_CLASS: className
+#
+#testName:windows:
+#  extends: .test_class:windows
+#  variables:
+#    TEST_CLASS: className
+
+# ---------------------------------------------------------------------
+# Polarion tests
+#   Test with dummy Polarion server
+# ----------------------------------------------------------------------
+Polarion:SurrogateLinking:linux:
+  extends: .test:linux
+  variables:
+    NEED_X11: "true"
+  script:
+    - $MATLAB "
+        addpath('tests/polarion/');
+        result = runtSurrogateLinking(
+                   '$POLARION_URL',
+                   '$POLARION_PROJECT',
+                   '$POLARION_USER',
+                   '$POLARION_PASS');
+        disp(table(result));
+        exit(any(~[result.Passed]))"
+
+Polarion:DirectLinking:linux:
+  extends: .test:linux
+  variables:
+    NEED_X11: "true"
+  script:
+    - $MATLAB "
+        addpath('tests/polarion/');
+        result = runtDirectLinking(
+                   '$POLARION_URL',
+                   '$POLARION_PROJECT',
+                   '$POLARION_USER',
+                   '$POLARION_PASS');
+        disp(table(result));
+        exit(any(~[result.Passed]))"
+
+Polarion:SurrogateLinking:windows:
+  extends: .test:windows
+  script: 
+    - '& $env:MATLAB_WIN -batch "
+        addpath(''tests/polarion'');
+        result = runtSurrogateLinking(
+                   ''$env:POLARION_URL'',
+                   ''$env:POLARION_PROJECT'',
+                   ''$env:POLARION_USER'',
+                   ''$env:POLARION_PASS'');
+        disp(table(result));
+        exit(any(~[result.Passed]))"'
+
+Polarion:DirectLinking:windows:
+  extends: .test:windows
+  script: 
+    - '& $env:MATLAB_WIN -batch "
+        addpath(''tests/polarion'');
+        result = runtDirectLinking(
+                   ''$env:POLARION_URL'',
+                   ''$env:POLARION_PROJECT'',
+                   ''$env:POLARION_USER'',
+                   ''$env:POLARION_PASS'');
+        disp(table(result));
+        exit(any(~[result.Passed]))"'
