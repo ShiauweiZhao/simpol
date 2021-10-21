@@ -128,11 +128,12 @@ classdef Image
             close(hf);
             
             % Crop
-            tim = tim(min(size(tim,1), size(I,1)), min(size(tim,2), size(I,2)),:);
+          
+            tim.cdata = tim.cdata(1:min(size(tim.cdata,1), size(I,1)), 1:min(size(tim.cdata,2), size(I,2)),:); %Cropping the text if the text is bigger than the original image
         
-            tim2 = sum(tim.cdata,3);
+            tim2 = sum(tim.cdata,3); %Summing the 3 RGB channels together
             
-            [i,j] = find(tim2 ~= (255*3));
+            [i,j] = find(tim2 ~= (255*3)); %Finding the non-white pixels
             
             % r
             ind1 = sub2ind(size(tim.cdata), i, j, ones(size(i)));
