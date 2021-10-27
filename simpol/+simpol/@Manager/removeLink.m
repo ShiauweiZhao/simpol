@@ -7,7 +7,8 @@ function [bSuccess, bBiSuccess] = removeLink(h, side, linkId)
 
     % Ensure that SimPol is in writable mode. If not, throw an
     % error.            
-    h.ensureIsWritable();            
+    h.ensureIsWritable();
+    h.polarionAdapter.ensureOpenSession;
 
     bBiSuccess = false;
 
