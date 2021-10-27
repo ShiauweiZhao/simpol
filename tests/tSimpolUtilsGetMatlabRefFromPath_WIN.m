@@ -1,4 +1,4 @@
-classdef tSimpolUtilsGetMatlabRefFromPath< matlab.unittest.TestCase
+classdef tSimpolUtilsGetMatlabRefFromPath_WIN< matlab.unittest.TestCase
     
     % Verify simpol.adapter.RMIMatlabCodeAdapter.validateTarge extract
     % correctly the function/class reference from the file path
@@ -7,12 +7,8 @@ classdef tSimpolUtilsGetMatlabRefFromPath< matlab.unittest.TestCase
         pathVsRef = {
             % win
             ["C:\Program Files\MATLAB\R2021a\toolbox\matlab\general\pwd.m", "pwd"]
-            % linux
-            ["/mw/snapshot/build/matlab/toolbox/matlab/general/pwd.m", "pwd"]
             % local fun/class
             ["curDirFun.m", "curDirFun"]
-            % class dir
-            ["/mw/@dummyDirClass/dummyDirClass.m", "dummyDirClass"]
             % class dir external fun
             ["C:\TMP\@dummyDirClass\extFun.m", "dummyDirClass.extFun"]
             % package
@@ -20,13 +16,11 @@ classdef tSimpolUtilsGetMatlabRefFromPath< matlab.unittest.TestCase
             % subpackage
             ["C:\TMP\+dummypkg\+dummysubpkg\dummySubPkgFun.m", "dummypkg.dummysubpkg.dummySubPkgFun"]
             % class in the package
-            ["C:\TMP\+simpol\@Manager\Manager.m", "simpol.Manager"]
+            ["D:\TMP\+simpol\@Manager\Manager.m", "simpol.Manager"]
             % class in the subpackage
-            ["C:\TMP\+simpol\+adapter\@RMIMatlabCodeAdapter\RMIMatlabCodeAdapter.m", "simpol.adapter.RMIMatlabCodeAdapter"]
+            ["D:\TMP\+simpol\+adapter\@RMIMatlabCodeAdapter\RMIMatlabCodeAdapter.m", "simpol.adapter.RMIMatlabCodeAdapter"]
             % class dir external fun in the package
             ["C:\TMP\+simpol\@Manager\addLink.m", "simpol.Manager.addLink"]
-            % + in the middle of filename
-            ["/mw/snapshot/build/matlab/toolbox/matlab/bad+folder/pwd.m", "pwd"]
             % wrong extension
             ["C:\Program Files\MATLAB\R2021a\toolbox\matlab\general\pwd.mat", ""]
             % @ in the middle of filename
@@ -49,6 +43,10 @@ classdef tSimpolUtilsGetMatlabRefFromPath< matlab.unittest.TestCase
     methods(Test)
         
         function correctPath( testcase, pathVsRef )
+            
+            testcase.assumeTrue( ispc,...
+                "Test runs only on a Windows platform." );        
+            
             if ~strcmp( pathVsRef(2), "")
                 testcase.verifyEqual( ...
                     simpol.utils.Utils.getMatlabRefFromPath( ...
