@@ -7,22 +7,28 @@ function addLink(h, workItemId, itemId_m)
     % cache and try again
     % ---------------------------
 
-%     URL = h.matlabAdapter.getNavURL(char(itemId_m));
-    
 
+    
     if itemId_m == ""
 
-        h.matlabAdapter.updateCache();
-
-%         itemId_m = convertCharsToStrings(...
-%             h.matlabAdapter.resolveLink(URL));
-
-        if itemId_m == ""
-
-            error("Link to '" + workItemId + "' cannot be established. " + ...
+        error("Link to '" + workItemId + "' cannot be established. " + ...
                 " Cannot find the RMI item." + ...
                 " Make sure that the target is available for SimPol.");
+    end
+    
+    flag = false;
+    for i=1:height(h.matlabAdapter.settings.Targets)
+        if isequal(char(extractBetween(itemId_m, "", "|")), h.matlabAdapter.settings.Targets{i})||...
+              isequal(char(extractBetween(itemId_m, "", ":")), h.matlabAdapter.settings.Targets{i})||...
+              isequal(char(extractBetween(itemId_m, "", ".sldd")), h.matlabAdapter.settings.Targets{i})
+            flag = true;
         end
+    end
+    
+    if flag == false
+        error("Link to '" + workItemId + "' cannot be established. " + ...
+                "The target you are trying to link does not exist in the list of targets. " +...
+                "Make sure it's added and try again.");
     end
 
     % For test files, we want to add relative paths as description
