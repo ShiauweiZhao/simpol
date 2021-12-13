@@ -17,7 +17,7 @@ function addLink(h, workItemId, itemId_m)
     end
     
     flag = false;
-    for i=1:height(h.matlabAdapter.settings.Targets)
+    for i=1:size(h.matlabAdapter.settings.Targets, 1)
         if isequal(char(extractBetween(itemId_m, "", "|")), h.matlabAdapter.settings.Targets{i})||...
               isequal(char(extractBetween(itemId_m, "", ":")), h.matlabAdapter.settings.Targets{i})||...
               isequal(char(extractBetween(itemId_m, "", ".sldd")), h.matlabAdapter.settings.Targets{i})
