@@ -66,7 +66,7 @@ classdef RepairUniDirectional < simpol.maintenance.AbstractJob
                 if adapter.getSide() == simpol.SideType.MATLAB
                     mgr.addLink(link.toItemId, link.itemId);
                 else
-                    mgr.addLink(link.itemId, link.toItemId);
+                    mgr.addLink(link.itemId, link.unresolvedName);
                 end
                 
 
