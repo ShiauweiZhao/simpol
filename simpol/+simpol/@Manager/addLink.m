@@ -27,8 +27,16 @@ function addLink(h, workItemId, itemId_m)
     
     if flag == false
         error("Link to '" + workItemId + "' cannot be established. " + ...
-                "The target you are trying to link does not exist in the list of targets. " +...
-                "Make sure it's added and try again.");
+            "The target you are trying to link does not exist in the list of targets. " +...
+            "Make sure it's added and try again.");
+    end
+    
+    % Checking if the Simulink model is closed and reopening it if so
+    simulinkModelName = string(char(extractBetween(itemId_m, "", ":")));
+    if ~bdIsLoaded(simulinkModelName)
+        open(simulinkModelName);
+        h.notifyStatus("Reloaded model '" + simulinkModelName + ...
+            ".slx' as it was closed.");
     end
 
     % For test files, we want to add relative paths as description
