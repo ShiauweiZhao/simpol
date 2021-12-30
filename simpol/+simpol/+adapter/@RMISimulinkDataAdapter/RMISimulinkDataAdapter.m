@@ -198,7 +198,7 @@ classdef RMISimulinkDataAdapter < simpol.adapter.AbstractBasicRMIAdapter
                 itemId = ddname_or_itemId;
             end
             
-            id = char(erase(itemId, 'Design.'));
+            id = char(strrep(itemId, '|Design.', '|Design Data.'));
             
         end
         
