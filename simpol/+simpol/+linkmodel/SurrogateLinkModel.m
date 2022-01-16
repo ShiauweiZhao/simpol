@@ -201,7 +201,8 @@ classdef SurrogateLinkModel < simpol.linkmodel.AbstractLinkModel
             mItemId = convertStringsToChars(mItemId);
             
             query = ['title:"' strrep(mItemId, ':', '\:')...
-                '" AND type:' polarionAdapter.settings.SurrogateWorkItemType];
+                '" AND type:' polarionAdapter.settings.SurrogateWorkItemType...
+                 ' AND project.id:' polarionAdapter.sProjectID];
             
             uris = polarionAdapter.trackerService.queryWorkItemUris(query, 'title');
             
