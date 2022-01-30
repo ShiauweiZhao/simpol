@@ -45,6 +45,12 @@ function [bSuccess, bBiSuccess] = removeLink(h, side, linkId)
                 h.polarionAdapter, h.matlabAdapter, link2);                    
         else
             bBiSuccess = counterAdapter.removeLink(link2);
+            workItemId = char(extractBetween(linkId,"","|"));
+            item = extractBetween(linkId, "%22", "%22");
+            itemId = char([item(1)+item(2)]);
+            h.notifyStatus( ...
+                "Link between " + workItemId + " and " +  itemId + ...
+                " successfully deleted.");
         end
     end
 
