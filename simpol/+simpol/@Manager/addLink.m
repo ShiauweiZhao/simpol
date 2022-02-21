@@ -33,10 +33,14 @@ function addLink(h, workItemId, itemId_m)
     end
     
     % Checking if the Simulink model is closed and reopening it if so
-    simulinkModelName = string(char(extractBetween(itemId_m, "", ":")));
-    if ~bdIsLoaded(simulinkModelName)
+    simulinkModelName = char(extractBetween(itemId_m, "", ":"));
+    
+    if ~isempty( simulinkModelName ) && ~bdIsLoaded(simulinkModelName) 
+        % Simulink models are the only RMI item that contain a semi-colon
+        % so checking if simulink model name is not empty is equivalent to
+        % checking if it's a simulink model
         open(simulinkModelName);
-        h.notifyStatus("Reloaded model '" + simulinkModelName + ...
+        h.notifyStatus("Reloaded model '" + string(simulinkModelName) + ...
             ".slx' as it was closed.");
     end
 

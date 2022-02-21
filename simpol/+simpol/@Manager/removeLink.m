@@ -14,10 +14,10 @@ function [bSuccess, bBiSuccess] = removeLink(h, side, linkId)
     
     % Checking if the Simulink model is closed and reopening it if so
     if any(contains(linkId,'.slx'))
-        simulinkModelName = string(char(extractBetween(linkId, "%22", ".slx")));
-        if ~bdIsLoaded(simulinkModelName)
+        simulinkModelName = char(extractBetween(linkId, "%22", ".slx"));
+        if ~isempty(simulinkModelName) && ~bdIsLoaded(simulinkModelName)
             open(simulinkModelName);
-            h.notifyStatus("Reloaded model '" + simulinkModelName + ...
+            h.notifyStatus("Reloaded model '" + string(simulinkModelName) + ...
                 ".slx' as it was closed.");
         end
     end
