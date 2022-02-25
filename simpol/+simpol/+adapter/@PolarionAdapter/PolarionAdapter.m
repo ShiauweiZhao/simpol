@@ -1006,7 +1006,7 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                 
                 % Choose password
                 if hasLocalUserPassword
-                    password = h.sUserPassword;
+                    password = simpol.utils.Utils.encrypt(h.sUserPassword);
                 else
                     if isempty(username)
                         [password, username] = passwordEntryDialog(...
