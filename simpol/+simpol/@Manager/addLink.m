@@ -61,6 +61,7 @@ function addLink(h, workItemId, itemId_m)
 
     % Create link on polarion side
     % ---------------------------
+    h.polarionAdapter.sessionService.beginTransaction;
     [bAddedLink, linkItemId] = h.linkModel.addLinkToSimulink(...
         h.polarionAdapter, h.matlabAdapter, workItemId, data);
 
@@ -100,4 +101,6 @@ function addLink(h, workItemId, itemId_m)
         error("LinkManager:PolarionLinkError", ...
             "Could not establish link on polarion side.");
     end
+    h.polarionAdapter.sessionService.endTransaction(false);
+    h.polarionAdapter.updateCache;
 end
