@@ -25,9 +25,16 @@ variables:
     sudo chown $(id -u):$(id -g) /usr/local/MATLAB/defaultMatlab/toolbox/local/pathdef.m
     $MATLAB "disp(version); run simpol/install_simpol"
     
+.uninstall_simpol_windows: &uninstall_simpol_windows
+  - '& $env:MATLAB_WIN -batch "
+    if any(strfind(path,''simpol''));
+       run simpol/uninstall_simpol.m;
+    end;"'
+
 .install_simpol_windows: &install_simpol_windows
+  - *uninstall_simpol_windows
   - '& $env:MATLAB_WIN -batch "disp(version); run simpol/install_simpol"'
- 
+
 # a docker job that runs Matlab on Linux
 .matlab:linux:
   tags: ["docker", "linux"]
@@ -44,11 +51,13 @@ variables:
   tags: ["windows"]
   before_script:
     - *install_simpol_windows
+  after_script:
+    - *uninstall_simpol_windows
 
 # rules
 .basic_rules: &basic_rules
   - if: '$CI_PIPELINE_SOURCE == "schedule"'
-  - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train" 
+  - if: $CI_MERGE_REQUEST_TARGET_BRANCH_NAME == "master" && $CI_MERGE_REQUEST_EVENT_TYPE == "merge_train"
   - when: manual
     allow_failure: true
 
@@ -73,7 +82,7 @@ variables:
   extends: .test:linux
   variables:
     TEST_CLASS: CLASS_TO_TEST
-  script: 
+  script:
     - $MATLAB "
       addpath('tests/');
       result = runtests('${TEST_CLASS}');
@@ -84,7 +93,7 @@ variables:
   extends: .test:windows
   variables:
     TEST_CLASS: CLASS_TO_TEST
-  script: 
+  script:
     - '& $env:MATLAB_WIN -batch "
       addpath(''tests/'');
       result = runtests(''$env:TEST_CLASS'');
@@ -95,7 +104,7 @@ variables:
   extends: .test:linux
   variables:
     TEST_DIR: DIR_TO_TEST
-  script: 
+  script:
     - $MATLAB "
       result = runtests('$TEST_DIR','IncludeSubfolders',false);
       disp(table(result));
@@ -105,7 +114,7 @@ variables:
   extends: .test:windows
   variables:
     TEST_DIR: DIR_TO_TEST
-  script: 
+  script:
     - '& $env:MATLAB_WIN -batch "
       result = runtests(''$env:TEST_DIR'');
       disp(table(result));
@@ -179,7 +188,7 @@ Polarion:DirectLinking:linux:
 
 Polarion:SurrogateLinking:windows:
   extends: .test:windows
-  script: 
+  script:
     - '& $env:MATLAB_WIN -batch "
         addpath(''tests/polarion'');
         result = runtSurrogateLinking(
@@ -192,7 +201,7 @@ Polarion:SurrogateLinking:windows:
 
 Polarion:DirectLinking:windows:
   extends: .test:windows
-  script: 
+  script:
     - '& $env:MATLAB_WIN -batch "
         addpath(''tests/polarion'');
         result = runtDirectLinking(
