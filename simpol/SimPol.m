@@ -1,5 +1,5 @@
 function instance = SimPol( mode )
-% SimPol function manges the singleton instance of SimPol.
+% SimPol function manages the singleton instance of SimPol.
 % Valid modes are
 % - close
 % - instance
@@ -7,14 +7,10 @@ function instance = SimPol( mode )
 
 % Test installation
 %sl_refresh_customizations
-if nargout == 0
-    try
-        t = com.polarion.alm.ws.client.types.Text;
-    catch
-        warning('Please install before startup by calling install_simpol.');
-        return;
-    end
 
+init_wsclient_path;
+
+if nargout == 0
     if isempty(what('+simpol')) || isempty(which('linktype_polarion'))
         warning('Please install before startup by calling install_simpol.');
         return;
