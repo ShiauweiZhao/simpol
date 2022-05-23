@@ -900,8 +900,8 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
             if h.dirtySession || ~h.sessionService.hasSubject()
                 if ~h.openSession()
                     error('PolarionAdapter:OpenSessionError', ...
-                        ['Could not open session. Please check your Polarion access token '...
-                        'and network connection. You can add an access token using the command >>setpref("polarion","Token",YourToken)']);
+                        ['Could not open session. Please check your Polarion access token/Credentials '...
+                        'and network connection.']);
                 end
                 h.dirtySession = false;
             end
@@ -980,71 +980,72 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         function b = openSession(h)
             h.notifyStatus("Opening session...");
-%             try
-%                 % Priority:
-%                 % 1 - Locally safed credentials
-%                 % 2 - Credentials in preferences
-%                 % 3 - Ask for credentials
-%                 
-%                 hasLocalUserName = ~isempty(h.sUserName);
-%                 hasLocalUserPassword = ~isempty(h.sUserPassword);
-%                 
-%                 hasPrefUserName = ispref('SimPol', 'UserName') &&...
-%                     ~isempty(getpref('SimPol', 'UserName'));
-%                 
-%                 % Legacy cleanup - we do not store the password anymore
-%                 if ispref('SimPol', 'UserPassword')
-%                     rmpref('SimPol', 'UserPassword');
-%                 end
-%                 
-%                 % Choose username
-%                 if hasLocalUserName
-%                     username = h.sUserName;
-%                 elseif hasPrefUserName
-%                     username = getpref('SimPol', 'UserName');
-%                 else
-%                     username = '';
-%                 end
-%                 
-%                 % Choose password
-%                 if hasLocalUserPassword
-%                     password = simpol.utils.Utils.encrypt(h.sUserPassword);
-%                 else
-%                     if isempty(username)
-%                          [password, username] = passwordEntryDialog(...
-%                              'enterUserName', true, 'CheckPasswordLength', false);
-                        
-%                         if password ~= -1 % Dialog canceled
-%                             password = simpol.utils.Utils.encrypt(password);
-%                             h.sUserName = username;
-%                             h.sUserPassword = password;
-%                         end
-%                         
-%                     else
-%                         password =  passwordEntryDialog(...
-%                             'CheckPasswordLength', false);
-%                         
-%                         if password ~= -1
-%                             password = simpol.utils.Utils.encrypt(password);
-%                             h.sUserPassword = password;
-%                         end
-%                     end
-%                 end
-%                 
-%                 if isempty(username) || isempty(password)
-%                     b = false;
-%                 else
-                   % Open session
-%                     h.sessionService.logIn(username, h.decrypt(password));
-%                     h.sessionService.logInWithToken("AccessToken", '', string(getpref('Polarion','Token')));
             try
-                h.sessionService.logInWithToken("AccessToken", '', string(getpref('SimPol','PolarionToken')));
+                if isempty(getpref('SimPol','PolarionToken'))
+                    % Priority:
+                    % 1 - Locally safed credentials
+                    % 2 - Credentials in preferences
+                    % 3 - Ask for credentials
+                
+                    hasLocalUserName = ~isempty(h.sUserName);
+                    hasLocalUserPassword = ~isempty(h.sUserPassword);
+                
+                    hasPrefUserName = ispref('SimPol', 'UserName') &&...
+                        ~isempty(getpref('SimPol', 'UserName'));
+                
+                    % Legacy cleanup - we do not store the password anymore
+                    if ispref('SimPol', 'UserPassword')
+                        rmpref('SimPol', 'UserPassword');
+                    end
+                
+                    % Choose username
+                    if hasLocalUserName
+                        username = h.sUserName;
+                    elseif hasPrefUserName
+                        username = getpref('SimPol', 'UserName');
+                    else
+                        username = '';
+                    end
+                
+                    % Choose password
+                    if hasLocalUserPassword
+                        password = simpol.utils.Utils.encrypt(h.sUserPassword);
+                    else
+                        if isempty(username)
+                            [password, username] = passwordEntryDialog(...
+                                'enterUserName', true, 'CheckPasswordLength', false);
+                        
+                            if password ~= -1 % Dialog canceled
+                                password = simpol.utils.Utils.encrypt(password);
+                                h.sUserName = username;
+                                h.sUserPassword = password;
+                            end
+                        
+                        else
+                            password =  passwordEntryDialog(...
+                                'CheckPasswordLength', false);
+                        
+                            if password ~= -1
+                                password = simpol.utils.Utils.encrypt(password);
+                                h.sUserPassword = password;
+                            end
+                        end
+                    end
+                
+                    if isempty(username) || isempty(password)
+                        b = false;
+                    else
+%                       Open session
+                        h.sessionService.logIn(username, h.decrypt(password));
+                    end
+                else
+                    h.sessionService.logInWithToken("AccessToken", '', string(getpref('SimPol','PolarionToken')));
+                end
                 b = h.sessionService.hasSubject();   
-%             end
-%                 
+
             catch ME
                 h.notifyStatus("Login failed. Please check your " + ...
-                    "Access token and server URL.");
+                    "Credentials/Access token and server URL.");
                 b = false;
             end
             
