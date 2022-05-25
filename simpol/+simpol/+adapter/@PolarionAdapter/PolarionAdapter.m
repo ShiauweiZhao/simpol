@@ -981,7 +981,7 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         function b = openSession(h)
             h.notifyStatus("Opening session...");
             try
-                if isempty(getpref('SimPol','PolarionToken'))
+                if ~ispref('SimPol','PolarionToken') || isempty(getpref('SimPol','PolarionToken'))
                     % Priority:
                     % 1 - Locally safed credentials
                     % 2 - Credentials in preferences
