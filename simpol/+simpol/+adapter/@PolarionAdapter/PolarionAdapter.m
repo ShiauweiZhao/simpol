@@ -1039,7 +1039,12 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                         h.sessionService.logIn(username, h.decrypt(password));
                     end
                 else
-                    h.sessionService.logInWithToken("AccessToken", '', string(getpref('SimPol','PolarionToken')));
+                    EncryptedToken = getpref('SimPol','PolarionToken');
+                    for i = 1:length(EncryptedToken)-1
+                        EncryptedToken(i) = (EncryptedToken(i)-71)/2;
+                    end
+                    Token = char(EncryptedToken);
+                    h.sessionService.logInWithToken("AccessToken", '', Token);
                 end
                 b = h.sessionService.hasSubject();   
 
