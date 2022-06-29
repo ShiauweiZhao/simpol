@@ -1036,14 +1036,11 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                         b = false;
                     else
 %                       Open session
-                        h.sessionService.logIn(username, h.decrypt(password));
+                        h.sessionService.logIn(username, h.decrypt(password,'password'));
                     end
                 else
                     EncryptedToken = getpref('SimPol','PolarionToken');
-                    for i = 1:length(EncryptedToken)-1
-                        EncryptedToken(i) = (EncryptedToken(i)-71)/2;
-                    end
-                    Token = char(EncryptedToken);
+                    Token = h.decrypt(EncryptedToken,'token');
                     h.sessionService.logInWithToken("AccessToken", '', Token);
                 end
                 b = h.sessionService.hasSubject();   
@@ -1141,9 +1138,14 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         % -----------------------------------------------------------------
         
-        function password = decrypt(h, i8_hash)
-
+        function password = decrypt(h, i8_hash, isToken)
+            % The parameter isToken is used to identify if the decrypted
+            % item is a token since tokens require different method
+            if isequal(isToken, 'token')
+                c = getpref('SimPol','Clock');
+            else
             c = clock;
+            end
             
             mgr = SimPol('instance');
             
