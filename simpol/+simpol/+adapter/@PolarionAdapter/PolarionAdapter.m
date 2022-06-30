@@ -981,7 +981,7 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         function b = openSession(h)
             h.notifyStatus("Opening session...");
             try
-                if ~ispref('SimPol','PolarionToken') || isempty(getpref('SimPol','PolarionToken'))
+                if ~ispref('SimPol','PolarionToken') || isempty(getpref('SimPol','PolarionToken')) || isequal(getpref('SimPol','PolarionToken'),0)
                     % Priority:
                     % 1 - Locally safed credentials
                     % 2 - Credentials in preferences
@@ -1142,15 +1142,17 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
             % The parameter isToken is used to identify if the decrypted
             % item is a token since tokens require different method
             if isequal(isToken, 'token')
-                c = getpref('SimPol','Clock');
+                ClockFigStruct = getpref('SimPol','Clock');
+                c = ClockFigStruct.a;
+                Fig = ClockFigStruct.b;
             else
+            mgr = SimPol('instance');
             c = clock;
+            Fig = typecast(double(mgr.hSimPolGUI.UIFigure), 'uint8');
             end
             
-            mgr = SimPol('instance');
-            
             u8_key = uint8([112    c(1:3) 121  125   114 ...
-                (typecast(double(mgr.hSimPolGUI.UIFigure), 'uint8') +...
+                (Fig +...
                 uint8([165   181   193    70   174   167    41    30]))   127]);
             sks = javax.crypto.spec.SecretKeySpec(u8_key , 'AES');
             cipher = javax.crypto.Cipher.getInstance('AES/ECB/PKCS5Padding', 'SunJCE');
