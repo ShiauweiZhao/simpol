@@ -11,14 +11,12 @@ classdef Utils < handle
                 i8_hash = 0;
                 return;
             end
- 
-            c = clock;
+            p = evalc('system(''wmic diskdrive get serialNumber'')');
             
-            mgr = SimPol('instance');
-            
-            u8_key = uint8([112    c(1:3) 121   125   114 ...
-                (typecast(double(mgr.hSimPolGUI.UIFigure), 'uint8') +...
+            u8_key = uint8([112  p(25:30) ...
+                (typecast(double(p(32)), 'uint8') +...
                 uint8([165   181   193    70   174   167    41    30]))   127]);
+
             sks = javax.crypto.spec.SecretKeySpec(u8_key , 'AES');
             cipher = javax.crypto.Cipher.getInstance('AES/ECB/PKCS5Padding', 'SunJCE');
             cipher.init(javax.crypto.Cipher.ENCRYPT_MODE, sks);

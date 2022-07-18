@@ -1036,11 +1036,11 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
                         b = false;
                     else
 %                       Open session
-                        h.sessionService.logIn(username, h.decrypt(password,'password'));
+                        h.sessionService.logIn(username, h.decrypt(password));
                     end
                 else
                     EncryptedToken = getpref('SimPol','PolarionToken');
-                    Token = h.decrypt(EncryptedToken,'token');
+                    Token = h.decrypt(EncryptedToken);
                     h.sessionService.logInWithToken("AccessToken", '', Token);
                 end
                 b = h.sessionService.hasSubject();   
@@ -1138,22 +1138,13 @@ classdef PolarionAdapter < simpol.adapter.AbstractAdapter
         
         % -----------------------------------------------------------------
         
-        function password = decrypt(h, i8_hash, isToken)
-            % The parameter isToken is used to identify if the decrypted
-            % item is a token since tokens require different method
-            if isequal(isToken, 'token')
-                ClockFigStruct = getpref('SimPol','Clock');
-                c = ClockFigStruct.a;
-                Fig = ClockFigStruct.b;
-            else
-            mgr = SimPol('instance');
-            c = clock;
-            Fig = typecast(double(mgr.hSimPolGUI.UIFigure), 'uint8');
-            end
+        function password = decrypt(h, i8_hash)
+            p = evalc('system(''wmic diskdrive get serialNumber'')');
             
-            u8_key = uint8([112    c(1:3) 121  125   114 ...
-                (Fig +...
-                uint8([165   181   193    70   174   167    41    30]))   127]);
+            u8_key = uint8([112  p(25:30) ...
+                (typecast(double(p(32)), 'uint8') +...
+                uint8([165   181   193    70   174   167    41    30]))   127]); 
+            
             sks = javax.crypto.spec.SecretKeySpec(u8_key , 'AES');
             cipher = javax.crypto.Cipher.getInstance('AES/ECB/PKCS5Padding', 'SunJCE');
             cipher.init(javax.crypto.Cipher.DECRYPT_MODE, sks);
