@@ -1,3 +1,11 @@
+###################
+#     Stages      #
+###################
+
+stages:          
+  - test 
+  - release
+
 ####################
 #     Headers      #
 ####################
@@ -211,3 +219,49 @@ Polarion:DirectLinking:windows:
                    ''$env:POLARION_PASS'');
         disp(table(result));
         exit(any(~[result.Passed]))"'
+        
+release:
+  tags: ["docker", "linux"] 
+  stage: release
+  image: registry.gitlab.com/gitlab-org/release-cli:latest
+  variables:
+    ZIP_NAME_PREFIX: simpol
+    TAR_NAME_PREFIX: simpol
+  before_script:
+    - apk update -q && apk add -q curl zip git tar
+    # PACKAGE_VERSION is number-only, e.g. 1.2.3
+    - PACKAGE_VERSION=$(echo ${CI_COMMIT_TAG} | sed -n 's/^v\([0-9]\+\.[0-9]\+\.\?[0-9]*\).*/\1/p')
+    - RELEASE_TAR_NAME="${TAR_NAME_PREFIX}-${PACKAGE_VERSION}.tar.gz"
+    - RELEASE_ZIP_NAME="${ZIP_NAME_PREFIX}-${PACKAGE_VERSION}.zip"
+    - PACKAGE_REGISTRY_ZIP_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${ZIP_NAME_PREFIX}/${PACKAGE_VERSION}/"
+    - PACKAGE_REGISTRY_TAR_URL="${CI_API_V4_URL}/projects/${CI_PROJECT_ID}/packages/generic/${TAR_NAME_PREFIX}/${PACKAGE_VERSION}/"
+    - RELEASE_DIR=.release
+    - TAG_TYPE=$(git cat-file -t ${CI_COMMIT_TAG})
+    - |
+      if [ ${TAG_TYPE} = "tag" ]; then
+        TAG_MESSAGE=$(git tag -l --format='%(contents)' ${CI_COMMIT_TAG});
+      fi
+    - |
+      if [ -z ${TAG_MESSAGE:+x} ]; then 
+        TAG_MESSAGE="There is no release message";
+      fi
+  script:
+    - echo "Release triggered by tag $CI_COMMIT_TAG"
+    - mkdir ${RELEASE_DIR}
+    - echo "${PACKAGE_VERSION}-${CI_COMMIT_SHA:0:8}" > simpol-version.m
+    - tar -zcvf ${RELEASE_DIR}/${RELEASE_TAR_NAME} --exclude='./.git' --exclude='.git*' --exclude="${RELEASE_DIR}" ./ 
+    - zip -rq ${RELEASE_DIR}/${RELEASE_ZIP_NAME} ./ -x *.git/\* *.git\* ${RELEASE_DIR}/\*
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${RELEASE_DIR}/${RELEASE_ZIP_NAME} ${PACKAGE_REGISTRY_ZIP_URL}
+    - |
+      curl --header "JOB-TOKEN: ${CI_JOB_TOKEN}" --upload-file ${RELEASE_DIR}/${RELEASE_TAR_NAME} ${PACKAGE_REGISTRY_TAR_URL}
+    - |
+      release-cli create \
+        --name "Release $CI_COMMIT_TAG" \
+        --tag-name "$CI_COMMIT_TAG" \
+        --description "${TAG_MESSAGE}" \
+        --assets-link "{\"name\":\"${RELEASE_ZIP_NAME}\",\"url\":\"${PACKAGE_REGISTRY_ZIP_URL}/${RELEASE_ZIP_NAME}\"}" \
+        --assets-link "{\"name\":\"${RELEASE_TAR_NAME}\",\"url\":\"${PACKAGE_REGISTRY_TAR_URL}/${RELEASE_TAR_NAME}\"}"
+  rules:
+    - if: '$CI_COMMIT_TAG =~ /^[vV]\d+\.\d+.*/'
+      when: manual        
