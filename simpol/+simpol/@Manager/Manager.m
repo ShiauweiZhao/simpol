@@ -1,11 +1,6 @@
 classdef Manager < handle & simpol.utils.UserNotificationInterface
     % Manager Singleton central SimPol instance.
     
-    properties(Constant)
-        version = '##VERSION##';
-        build = '##BUILD##';
-    end
-    
     properties
         hSimPolGUI = -1;
         guiUpdateTimer; % Must be external to gui, since the destructor of
@@ -178,6 +173,61 @@ classdef Manager < handle & simpol.utils.UserNotificationInterface
         end
         
     end
+        methods (Static)
+        function v = getVersion()
     
+            pathname = fileparts(mfilename("fullpath"));
+            pathname = fileparts(fileparts(pathname)); % Move to simpol/simpol folder 
+
+            if isempty(pathname)
+                sim_pol_version = 'unknown';   
+            else
+                version_file = pathname + "/simpol-version.m";
+
+                if isfile(version_file) % Version file exists 
+
+                   fid = fopen(version_file);
+                   line_version = fgetl(fid); % Read first line 
+
+                   if line_version == -1 % Empty file 
+                       sim_pol_version = 'unknown';
+                   elseif strlength(line_version) < 3 % Minimum test - invalid version 
+                       sim_pol_version = 'unknown';
+                   else
+                       sim_pol_version = line_version;
+                   end 
+
+                else % Version file is missing
+
+                    % Check if we are in a git repo %
+                    [status, cmdout] = system("git rev-parse --is-inside-work-tree");
+
+                    if status ~= 0 || cmdout == "false" % Git not available  
+                        sim_pol_version = 'unknown';
+
+                    else % Working on a git repo 
+
+                        [status, cmdout] = system("git describe --tags");
+
+                        if status == 0 % Tag exists 
+                            sim_pol_version = cmdout;
+
+                        else
+                            [status, cmdout] = system("git rev-parse --short HEAD");
+
+                            if status == 0 % Commit hash 
+                                sim_pol_version = cmdout;
+                            else
+                                sim_pol_version = 'unkown';
+                            end
+                        end 
+                    end
+                end % File is missing 
+            end
+            v = sim_pol_version;  
+        end % version
+
+    end % static methods
+   
 end
 

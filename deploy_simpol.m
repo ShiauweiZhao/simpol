@@ -12,27 +12,6 @@ try
     rmpath(genpath('simpol'));
 end
 
-version = input('Version? ', 's');
-
-folderName = ['SimPol-' version '_' datestr(datetime('now'), 'yyyymmdd')];
-folderPath = fullfile(pwd, folderName);
-mkdir(folderPath);
-copyfile('simpol', folderPath);
-
-
-fid = fopen(fullfile(folderPath, '+simpol', '@manager', 'Manager.m'), 'r');
-s = fread(fid, '*char')';
-s = strrep(s, '##VERSION##', version);
-s = strrep(s, '##BUILD##', datestr(now));
-fclose(fid);
-
-fid = fopen(fullfile(folderPath, '+simpol', '@manager', 'Manager.m'), 'w');
-fwrite(fid, s);
-fclose(fid);
-
-% Now add to path
-addpath(genpath(folderPath));
-
 % Protect all files
 list = dir(fullfile(folderPath, '**/*.m'));
 

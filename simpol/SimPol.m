@@ -41,6 +41,10 @@ if nargin == 1 && strcmp(mode, 'close')
         end
     end
     
+elseif nargin == 1 && strcmp(mode, 'version')
+    fprintf(1,'%s\n',simpol.Manager.getVersion());
+    return;    
+    
 elseif nargin == 1 && ~(strcmp(mode, 'test') || strcmp(mode, 'instance'))
     error(['SimPol ' mode ' command not supported'] );
     

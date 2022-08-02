@@ -22,7 +22,7 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Installation and first startup:
 
-1. Download the `simpol` folder of this project and copy it to your favorite location, e.g. `C:/Program Files/SimPol`.
+1. To use SimPol, you can directly clone this repository, or download it in the [releases](https://gitlab.com/tum-fsd/simpol/-/releases) section.
 
 1. In MATLAB, open the root folder of SimPol and type `install_simpol`.
 
