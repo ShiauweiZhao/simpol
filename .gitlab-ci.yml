@@ -261,6 +261,7 @@ release:
     - echo "Release triggered by tag $CI_COMMIT_TAG"
     - mkdir ${RELEASE_DIR}
     - echo "${PACKAGE_VERSION}-${CI_COMMIT_SHA:0:8}" > simpol/simpol-version.m
+    - rm -rf tests 'SimPol User Guide.docx' deploy_simpol.m
     - tar -zcvf ${RELEASE_DIR}/${RELEASE_TAR_NAME} --exclude='./.git' --exclude='.git*' --exclude="${RELEASE_DIR}" ./
     - zip -rq ${RELEASE_DIR}/${RELEASE_ZIP_NAME} ./ -x *.git/\* *.git\* ${RELEASE_DIR}/\*
     - |
