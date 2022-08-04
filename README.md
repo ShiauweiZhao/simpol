@@ -22,19 +22,19 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
 
 ### Installation and first startup:
 
-1. To use SimPol, you can directly clone this repository, or download it in the [releases](https://gitlab.com/tum-fsd/simpol/-/releases) section.
+1. To use SimPol, download the latest release from [here](https://gitlab.com/tum-fsd/simpol/-/releases).
 
-1. In MATLAB, open the root folder of SimPol and type `install_simpol`.
+1. Copy the `simpol` folder to a location of your choice.
 
-1. Check section 6 of the [SimPol User Guide](SimPol%20User%20Guide.docx) if your Polarion server uses an SSL certificate.
+1. In MATLAB, open this folder and type `install_simpol`.
+
+1. Check section 6 of the [SimPol User Guide](SimPol%20User%20Guide.pdf) if your Polarion server uses an SSL certificate and you have trouble connecting to the server.
 
 1. Restart MATLAB.
 
 1. Call `SimPol`.
 
-Alternatively, you can use `deploy_simpol` to create a p-code version of SimPol which can then be distributed locally for installation.
-
-Refer to [SimPol User Guide](SimPol%20User%20Guide.docx) for more details.
+Refer to [SimPol User Guide](SimPol%20User%20Guide.pdf) for more details.
 
 ### Deinstallation:
 
