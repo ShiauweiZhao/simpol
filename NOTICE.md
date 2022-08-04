@@ -1,4 +1,4 @@
-Copyright 2021 Markus Hochstrasser and 
+Copyright 2022 Markus Hochstrasser and 
 Lehrstuhl für Flugsystemdynamik, Technische Universität München
 
 Licensed under the Apache License, Version 2.0 (the "License");

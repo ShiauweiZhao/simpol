@@ -68,7 +68,8 @@ Only use a version later than 2019a if really required.
 ## Issues
 
 Open an issue if you want to report a bug or suggest a feature.
-Use the provided issue templates and fill them out as much as possible
+
+Use the provided issue templates and fill them out as much as possible.
 
 ## Merge Request title
 
@@ -82,4 +83,4 @@ For example some good titles would be:
 * [topic] MATLAB 202Xx - Polarion 2XRX
 * [cool new feature] MATLAB 2021a - Polarion 21R1
 
-If your pull request does not require a new tool version, you don't need to provide the versions.
+If your pull request does not require a new version of MATLAB or Polarion, you don't need to provide the version numbers in the title.

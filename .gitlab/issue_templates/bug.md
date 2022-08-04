@@ -1,6 +1,10 @@
 ### Summary
 
 
+### SimPol version
+(Please paste the output of MATLAB command `SimPol version`)
+
+
 ### Steps to reproduce
 
 
